@@ -1,4 +1,4 @@
-## Script created by Joseph Armstrong (armstjc@mail.uc.edu
+## Script created by Joseph Armstrong (armstjc@mail.uc.edu)
 ## Latest Script edit: 10/05/2021
 ##
 ## Script name: main.py
@@ -10,12 +10,13 @@ from RefreshStockAbv import *
 from YFinance_scripts import *
 from congress import *
 from coinbase_py import *
+from getStockHistory import * 
 
 def main():
     #####################################################
     ##          fileDirectoryCreation Scripts          ##
     #####################################################
-    #checkFolderIntegrity()
+    checkFolderIntegrity()
      
 
     #####################################################
@@ -27,10 +28,10 @@ def main():
     ##          YFinance Scripts                       ##
     #####################################################
     #getTodaysStockHistory(1)
-    getStockHistory()
-    getStockActions()
-    getStockFinancials()
-    getStockOptions()
+    #getStockHistory()
+    #getStockActions()
+    #getStockFinancials()
+    #getStockOptions()
     #getDayStockTicker()
     #getMajorHolders()
     #getInstitutionalHolders()
@@ -39,13 +40,13 @@ def main():
     ##          congress Scripts                       ##
     #####################################################
     
-    #getHouseTransactions()
-    #getSenateTransactions()
+    getHouseTransactions()
+    getSenateTransactions()
 
     #####################################################
     ##          coinbase_py Scripts                    ##
     #####################################################
-    fetchCoinbaseSymbols()
+    #fetchCoinbaseSymbols()
     fetchCryptoCurrencies()
     fetchDailyData(symbol="BTC/USD")
 

@@ -31,7 +31,11 @@ def checkFolderIntegrity():
     # are already there.
     global fileDirectory
     fileDirectory = 'D:/Stocks'
-    
+    try:
+        os.mkdir(fileDirectory+'/')
+    except:
+        pass
+
     try:
         os.mkdir(fileDirectory + '/StockHistory/')
     except:

@@ -6,6 +6,7 @@
 
 import yfinance as yf
 import os 
+import os.path
 import pandas as pd
 from multiprocessing import Pool
 from datetime import timedelta, date
@@ -17,9 +18,18 @@ checkFolderIntegrity()
 
 ## Defining variables as global variables 
 ## (can be used without calling this function directly)
+global stockList
+if(os.path.exists(fileDirectory + '/Stock_List.csv') != True):
+    f = open(fileDirectory + "/Stock_List.csv", "a")
+    f.close()
+
+else:
+    pass
 
 stockList = pd.read_csv(fileDirectory + '/Stock_List.csv')
 stockListLen = len(stockList)
+
+
 
 # Date format = "2021-09-01"
 today = date.today()
@@ -36,6 +46,7 @@ def getTodaysStockHistory(daysOffset):
     Grabs the by-minute history of a stock.
 
     '''
+    print('Getting today''s stock history.')
     d = daysOffset
     print('get ticker data')
     #2021-09-30 = "$Y-%m-%d"
@@ -54,6 +65,8 @@ def getTodaysStockHistory(daysOffset):
         except:
             pass
 
+    
+
 
 def getStockHistory():
     '''
@@ -69,6 +82,7 @@ def getStockHistory():
     unless you have it formatted this way.
    
     '''
+    print('Getting the full history of the stock market.')
     for i in tqdm(stockList.index, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
         try:
             stock = yf.Ticker(stockList['Symbol'][i])
