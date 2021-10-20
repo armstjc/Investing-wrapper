@@ -40,15 +40,15 @@ def main():
     ##          congress Scripts                       ##
     #####################################################
     
-    getHouseTransactions()
-    getSenateTransactions()
+    #getHouseTransactions()
+    #getSenateTransactions()
 
     #####################################################
     ##          coinbase_py Scripts                    ##
     #####################################################
     #fetchCoinbaseSymbols()
-    fetchCryptoCurrencies()
-    fetchDailyData(symbol="BTC/USD")
+    #fetchCryptoCurrencies()
+    #fetchDailyData(symbol="BTC/USD")
 
 if __name__ == "__main__":
     main()
