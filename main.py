@@ -46,8 +46,9 @@ def main():
     #####################################################
     ##          coinbase_py Scripts                    ##
     #####################################################
-    #fetchCoinbaseSymbols()
+    #fetchCoinbaseSymbols(fileDirectory+ '/coinbase.json') # By default, this will be in wherever you specify your file directory, for a file called 'coinbase.json'
     #fetchCryptoCurrencies()
+    #fetchAllCoinbase()
     #fetchDailyData(symbol="BTC/USD")
 
 if __name__ == "__main__":

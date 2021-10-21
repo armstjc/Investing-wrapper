@@ -4,7 +4,9 @@ import pandas as pd
 import requests
 import json
 from urllib.request import urlopen 
+from bs4 import BeautifulSoup
 from fileDirectoryCreation import *
+from tqdm import tqdm
 checkFolderIntegrity()
 
 def fetchCryptoCurrencies():
@@ -305,20 +307,25 @@ def fetchCryptoCurrencies():
     df_crypto.to_csv(fileDirectory+'/cryptoABV.csv',index=False)
     print(df_crypto)
     
-def fetchCoinbaseSymbols():
+def fetchCoinbaseSymbols(file):
     '''
 
     Utilizes the Coinbase PRO API to grab a list of cryptocurencies supported
     by Coinbase, and their online platform, and saves them to a local CSV file.
 
+    To start, download the file from 'https://api.pro.coinbase.com/products' as a JSON file,
+    then feed it through this function to get desired results.
+
+    Args:
+    file: the directory your saved JSON file exists in.
+
     '''
-    URL = 'https://api.pro.coinbase.com/products'
-    response = requests.get(URL)
-    storage = response.json()
+    print(file)
+    jsonFile = file
+    df = pd.read_json(jsonFile)
+    df.to_csv(fileDirectory+'/Crypto/coinbase_listings.csv')
+    print(df)
 
-    df_crypto = pd.read_json(storage,orient='index')
-
-    print(df_crypto)
 
 def fetchDailyData(symbol):
     '''
@@ -346,11 +353,16 @@ def fetchDailyData(symbol):
         if data is None:
             print("Did not return any data from Coinbase for this symbol")
         else:
-            data.to_csv(fileDirectory+'/Crypto/Coinbase_'+ pair_split[0] + pair_split[1] + '_dailydata.csv', index=False)
+            data.to_csv(fileDirectory+'/Crypto/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_dailydata.csv', index=False)
 
     else:
         print("Did not receieve OK response from Coinbase API")
 
+def fetchAllCoinbase():
+    coinbaseSymbols = pd.read_csv(fileDirectory+'/Crypto/coinbase_listings.csv')
+
+    for c in tqdm(coinbaseSymbols.index, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
+        fetchDailyData(str(coinbaseSymbols['id'][c]).replace('-','/'))
 
 
 #if __name__ == "__main__":
