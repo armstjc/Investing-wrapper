@@ -15,3 +15,5 @@ HOW TO USE THIS PACKAGE FOR THE FIRST TIME
 3. ....
 
 4. Profit!
+
+If you have recomondations about what I should add to this package, please comment in the "Discussions" tab.
