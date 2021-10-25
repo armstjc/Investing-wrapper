@@ -130,3 +130,8 @@ def checkFolderIntegrity():
         os.mkdir(fileDirectory + '/Crypto/')
     except:
         pass
+
+    try:
+        os.mkdir(fileDirectory + '/Congress/')
+    except:
+        pass
