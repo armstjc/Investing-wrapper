@@ -132,6 +132,50 @@ def checkFolderIntegrity():
         pass
 
     try:
+        os.mkdir(fileDirectory + '/Crypto/EUR/')
+    except:
+        pass
+
+    try:
+        os.mkdir(fileDirectory + '/Crypto/GBP/')
+    except:
+        pass
+
+    try:
+        os.mkdir(fileDirectory + '/Crypto/USD/')
+    except:
+        pass
+
+    try:
+        os.mkdir(fileDirectory + '/Crypto/USDC/')
+    except:
+        pass
+
+    try:
+        os.mkdir(fileDirectory + '/Crypto/USDT/')
+    except:
+        pass
+
+    try:
+        os.mkdir(fileDirectory + '/Crypto/UST/')
+    except:
+        pass
+
+    try:
+        os.mkdir(fileDirectory + '/Crypto/BTC/')
+    except:
+        pass
+
+    try:
+        os.mkdir(fileDirectory + '/Crypto/ETH/')
+    except:
+        pass
+
+    try:
+        os.mkdir(fileDirectory + '/Crypto/DAI/')
+    except:
+        pass
+    try:
         os.mkdir(fileDirectory + '/Congress/')
     except:
         pass

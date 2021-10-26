@@ -65,7 +65,7 @@ def fetchCryptoCurrencies():
     cryptoIsUsedInDefi = ''
     cryptoIsUsedInNft = ''
 
-    for bill in storage['Data']:
+    for bill in tqdm(storage['Data'],ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
         try:
             cryptoID = storage['Data'][bill]['Id']
         except:
@@ -303,7 +303,7 @@ def fetchCryptoCurrencies():
         'cryptoIsUsedInNft':cryptoIsUsedInNft            
         }
         df_crypto = df_crypto.append(new_row, ignore_index=True)
-        print(cryptoID+': '+cryptoName)
+        #print(cryptoID+': '+cryptoName)
     df_crypto.to_csv(fileDirectory+'/cryptoABV.csv',index=False)
     print(df_crypto)
     
@@ -353,7 +353,27 @@ def fetchDailyData(symbol):
         if data is None:
             print("Did not return any data from Coinbase for this symbol")
         else:
-            data.to_csv(fileDirectory+'/Crypto/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_dailydata.csv', index=False)
+            if(pair_split[1] == "EUR"):
+                data.to_csv(fileDirectory+'/Crypto/EUR/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_dailydata.csv', index=False)
+            elif(pair_split[1] == "GBP"):
+                data.to_csv(fileDirectory+'/Crypto/GBP/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_dailydata.csv', index=False)
+            elif(pair_split[1] == "USD"):
+                data.to_csv(fileDirectory+'/Crypto/USD/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_dailydata.csv', index=False)
+            elif(pair_split[1] == "USDC"):
+                data.to_csv(fileDirectory+'/Crypto/USDC/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_dailydata.csv', index=False)
+            elif(pair_split[1] == "USDT"):
+                data.to_csv(fileDirectory+'/Crypto/USDT/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_dailydata.csv', index=False)
+            elif(pair_split[1] == "UST"):
+                data.to_csv(fileDirectory+'/Crypto/UST/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_dailydata.csv', index=False)
+            elif(pair_split[1] == "BTC"):
+                data.to_csv(fileDirectory+'/Crypto/USDT/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_dailydata.csv', index=False)
+            elif(pair_split[1] == "ETH"):
+                data.to_csv(fileDirectory+'/Crypto/UST/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_dailydata.csv', index=False)
+            elif(pair_split[1] == "DAI"):
+                data.to_csv(fileDirectory+'/Crypto/UST/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_dailydata.csv', index=False)
+            else:
+                data.to_csv(fileDirectory+'/Crypto/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_dailydata.csv', index=False)
+
 
     else:
         print("Did not receieve OK response from Coinbase API")

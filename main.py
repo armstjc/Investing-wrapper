@@ -40,8 +40,8 @@ def main():
     ##          congress Scripts                       ##
     #####################################################
     
-    getHouseTransactions()
-    getSenateTransactions()
+    #getHouseTransactions()
+    #getSenateTransactions()
 
     #####################################################
     ##          coinbase_py Scripts                    ##
