@@ -29,13 +29,15 @@ def main():
     #####################################################
     #getTodaysStockHistory(1)
     #getStockHistory()
+    getStockHistoryWithIndicators()
     #getStockActions()
     #getStockFinancials()
     #getStockOptions()
     #getDayStockTicker()
     #getMajorHolders()
     #getInstitutionalHolders()
-    
+    #alterForRSI()
+
     #####################################################
     ##          congress Scripts                       ##
     #####################################################
