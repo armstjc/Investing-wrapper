@@ -29,7 +29,8 @@ def main():
     #####################################################
     #getTodaysStockHistory(1)
     #getStockHistory()
-    getStockHistoryWithIndicators()
+    #getStockHistoryWithIndicators()
+    #fastCalculateStockIndicators()
     #getStockActions()
     #getStockFinancials()
     #getStockOptions()
@@ -50,7 +51,7 @@ def main():
     #####################################################
     #fetchCoinbaseSymbols(fileDirectory+ '/coinbase.json') # By default, this will be in wherever you specify your file directory, for a file called 'coinbase.json'
     #fetchCryptoCurrencies()
-    #fetchAllCoinbase()
+    fetchAllCoinbase()
     #fetchDailyData(symbol="BTC/USD")
 
 if __name__ == "__main__":

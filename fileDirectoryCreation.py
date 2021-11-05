@@ -5,7 +5,7 @@
 ## Script use case: Creates the default directories for the user to use in these python scripts
 
 import os
-
+import platform
 
 
 ##########################################
@@ -17,9 +17,21 @@ import os
 ## Python!!                             ##
 ##########################################
 
+osName = platform.system()
 global fileDirectory
-
-fileDirectory = 'D:/Stocks'
+print(osName)
+if(osName == "Windows"):
+    fileDirectory = 'D:/Stocks'
+    print('This is a Windows Machine.')
+elif(osName == "Darwin"):
+    fileDirectory = str(os.path.expanduser('~'))
+    # If someone knows mac os, I'd like to know how this can be improved on.
+    print('This is a Mac OS X Machine.')
+elif(osName == "Linux"):
+    fileDirectory = '/Stocks'
+    print('This is a Linux Machine.')
+else:
+    print('OS not Supported!')
 
 def checkFolderIntegrity():
     '''

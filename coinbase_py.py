@@ -7,6 +7,13 @@ from urllib.request import urlopen
 from bs4 import BeautifulSoup
 from fileDirectoryCreation import *
 from tqdm import tqdm
+from ta import add_all_ta_features
+from ta.momentum import *
+from ta.volume import *
+from ta.volatility import *
+from ta.trend import * 
+from ta.others import *
+from ta.utils import dropna
 checkFolderIntegrity()
 
 def fetchCryptoCurrencies():
@@ -346,9 +353,146 @@ def fetchDailyData(symbol):
     response = requests.get(url)
     if response.status_code == 200:  # check to make sure the response from server is good
         data = pd.DataFrame(json.loads(response.text), columns=['unix', 'low', 'high', 'open', 'close', 'volume'])
+        data.sort_values(by=['unix'],inplace=True)
         data['date'] = pd.to_datetime(data['unix'], unit='s')  # convert to a readable date
         data['vol_fiat'] = data['volume'] * data['close']      # multiply the BTC volume by closing price to approximate fiat volume
+        Momentum_AOI = AwesomeOscillatorIndicator(high=data.high, low=data.low)
+        data['AOI'] = Momentum_AOI.awesome_oscillator()
 
+        Momentum_KARMA = KAMAIndicator(close=data.close)
+        data['KAMA'] = Momentum_KARMA.kama()
+
+        Momentum_PPO = PercentagePriceOscillator(close=data.close)
+        data['PPO'] = Momentum_PPO.ppo()
+        data['PPO_Histogram'] = Momentum_PPO.ppo_hist()
+        data['PPO_Signal'] = Momentum_PPO.ppo_hist()
+
+        Momentum_PVO = PercentageVolumeOscillator(volume=data.volume)
+        data['PVO'] = Momentum_PVO.pvo()
+        data['PVO_Histogram'] = Momentum_PVO.pvo_hist()
+        data['PVO_Signal'] = Momentum_PVO.pvo_signal()
+
+        Momentum_RSI = RSIIndicator(close=data.close,window=14)
+        data['RSI'] = Momentum_RSI.rsi()
+
+        Momentum_StochasticOscillator = StochasticOscillator(data.high, data.low, data.close)
+        data['Stochastic Oscillator'] = Momentum_StochasticOscillator.stoch()
+        data['Stochastic Oscillator_Signial'] = Momentum_StochasticOscillator.stoch_signal()
+
+        Momentum_UltimateOscillator = UltimateOscillator(high=data.high, low=data.low, close=data.close)
+        data['Ultimate Oscillator'] = Momentum_UltimateOscillator.ultimate_oscillator()
+
+        Momentum_Williams_R = WilliamsRIndicator(high=data.high,low=data.low,close=data.close)
+        data['Williams %R'] = Momentum_Williams_R.williams_r()
+
+        Volume_ADI = AccDistIndexIndicator(high=data.high,low=data.low,close=data.close,volume=data.volume)
+        data['ADI'] = Volume_ADI.acc_dist_index()
+
+        Volume_CMF = ChaikinMoneyFlowIndicator(high=data.high,low=data.low,close=data.close,volume=data.volume)
+        data['CMF'] = Volume_CMF.chaikin_money_flow()
+
+        Volume_FI = ForceIndexIndicator(close=data.close,volume=data.volume)
+        data['FI'] = Volume_FI.force_index()
+
+        Volume_MFI = MFIIndicator(high=data.high,low=data.low,close=data.close,volume=data.volume)
+        data['MFI'] = Volume_MFI.money_flow_index()
+
+        Volume_VWAP = VolumeWeightedAveragePrice(high=data.high,low=data.low,close=data.close,volume=data.volume)
+        data['VWAP'] = Volume_VWAP.volume_weighted_average_price()
+
+        Volitility_Bollinger = BollingerBands(close=data.close)
+        data['Bollinger High Band'] = Volitility_Bollinger.bollinger_hband()
+        data['Bollinger High Band Indicator'] = Volitility_Bollinger.bollinger_hband_indicator()
+        data['Bollinger Low Band'] = Volitility_Bollinger.bollinger_lband()
+        data['Bollinger Low Band Indicator'] = Volitility_Bollinger.bollinger_lband_indicator()
+        data['Bollinger Middle Band'] = Volitility_Bollinger.bollinger_mavg()
+        data['Bollinger Percetage Band'] = Volitility_Bollinger.bollinger_pband()
+        data['Bollinger Band Width'] = Volitility_Bollinger.bollinger_wband()
+
+        Volitility_Donchian = DonchianChannel(high=data.high,low=data.low,close=data.close)
+        data['Donchian Channel High Band'] = Volitility_Donchian.donchian_channel_hband()
+        data['Donchian Channel Low Band'] = Volitility_Donchian.donchian_channel_lband()
+        data['Donchian Channel Middle Band'] = Volitility_Donchian.donchian_channel_mband()
+        data['Donchian Channel Percentage Band'] = Volitility_Donchian.donchian_channel_pband()
+        data['Donchian Channel Band Width'] = Volitility_Donchian.donchian_channel_wband()
+
+        Volatility_Keltner = KeltnerChannel(high=data.high,low=data.low,close=data.close)
+        data['Keltner Channel High Band'] = Volatility_Keltner.keltner_channel_hband()
+        data['Keltner Channel Indicator Crossing High Band'] = Volatility_Keltner.keltner_channel_hband_indicator()
+        data['Keltner Channel Low Band'] = Volatility_Keltner.keltner_channel_lband()
+        data['Keltner Channel Indicator Crossing Low Band'] = Volatility_Keltner.keltner_channel_lband_indicator()
+        data['Keltner Channel Middle Band'] = Volatility_Keltner.keltner_channel_mband()
+        data['Keltner Channel Percentage Band'] = Volatility_Keltner.keltner_channel_pband()
+        data['Keltner Channel Band Width'] = Volatility_Keltner.keltner_channel_wband()
+
+        Volatility_Ulcer = UlcerIndex(close=data.close)
+        data['Ulcer Index'] = Volatility_Ulcer.ulcer_index()
+
+        Volatility_ATR = average_true_range(high=data.high,low=data.low,close=data.close)
+        data['ATR'] = Volatility_ATR
+
+        Trend_Aroon = AroonIndicator(close=data.close)
+        data['Aroon Down Channel'] = Trend_Aroon.aroon_down()
+        data['Aroon Indicator'] = Trend_Aroon.aroon_indicator()
+        data['Aroon Up Channel'] = Trend_Aroon.aroon_up()
+
+        Trend_CCI = CCIIndicator(high=data.high,low=data.low,close=data.close)
+        data['CCI'] = Trend_CCI.cci()
+
+        Trend_DPO = DPOIndicator(close=data.close)
+        data['DPO'] = Trend_DPO.dpo()
+
+        Trend_EMA = EMAIndicator(close=data.close)
+        data['EMA'] = Trend_EMA.ema_indicator()
+
+        Trend_Ichimoku = IchimokuIndicator(high=data.high,low=data.low)
+        data['Ichimoku Senkou Span A'] = Trend_Ichimoku.ichimoku_a()
+        data['Ichimoku Senkou Span B'] = Trend_Ichimoku.ichimoku_b()
+        data['Ichimoku Kujun-sen'] = Trend_Ichimoku.ichimoku_base_line()
+        data['Ichimoku Tenkan-Sen'] = Trend_Ichimoku.ichimoku_conversion_line()
+
+        Trend_KST = KSTIndicator(close=data.close)
+        data['KST'] = Trend_KST.kst()
+        data['Diff KST'] = Trend_KST.kst_diff()
+        data['Signal Line KST'] = Trend_KST.kst_sig()
+
+        Trend_MACD = MACD(close=data.close)
+        data['MACD Line'] = Trend_MACD.macd()
+        data['MACD Histogram'] = Trend_MACD.macd_diff()
+        data['MACD Signal Line'] = Trend_MACD.macd_signal()
+
+        Trend_MI = MassIndex(high=data.high,low=data.low)
+        data['Mass Index'] = Trend_MI.mass_index()
+
+        Trend_PSAR = PSARIndicator(high=data.high,low=data.low,close=data.close)
+        data['PSAR'] = Trend_PSAR.psar()
+        data['PSAR Down'] = Trend_PSAR.psar_down()
+        data['PSAR Down Indicator'] = Trend_PSAR.psar_down_indicator()
+        data['PSAR Up'] = Trend_PSAR.psar_up()
+        data['PSAR Up Indicator'] = Trend_PSAR.psar_up_indicator()
+
+        Trend_STC = STCIndicator(close=data.close)
+        data['STC'] = Trend_STC.stc()
+
+        Trend_TRIX = TRIXIndicator(close=data.close)
+        data['TRIX'] = Trend_TRIX.trix()
+
+        Trend_Vortex = VortexIndicator(high=data.high,low=data.low,close=data.close)
+        data['VI'] = Trend_Vortex.vortex_indicator_diff()
+        data['VI-'] = Trend_Vortex.vortex_indicator_neg()
+        data['VI+'] = Trend_Vortex.vortex_indicator_pos()
+
+        Trend_WMA = WMAIndicator(close=data.close)
+        data['WMA'] = Trend_WMA.wma()
+
+        Other_CR = CumulativeReturnIndicator(close=data.close)
+        data['CR'] = Other_CR.cumulative_return()
+
+        Other_DLR = DailyLogReturnIndicator(close=data.close)
+        data['DLR'] = Other_DLR.daily_log_return()
+
+        Other_DR = DailyReturnIndicator(close=data.close)
+        data['DR'] = Other_DR.daily_return()
         # if we failed to get any data, print an error...otherwise write the file
         if data is None:
             print("Did not return any data from Coinbase for this symbol")
