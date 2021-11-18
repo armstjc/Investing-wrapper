@@ -14,6 +14,8 @@ from ta.volatility import *
 from ta.trend import * 
 from ta.others import *
 from ta.utils import dropna
+import glob
+import os
 checkFolderIntegrity()
 
 def fetchCryptoCurrencies():
@@ -314,7 +316,7 @@ def fetchCryptoCurrencies():
     df_crypto.to_csv(fileDirectory+'/cryptoABV.csv',index=False)
     print(df_crypto)
     
-def fetchCoinbaseSymbols(file):
+def fetchCoinbaseSymbols():
     '''
 
     Utilizes the Coinbase PRO API to grab a list of cryptocurencies supported
@@ -327,9 +329,13 @@ def fetchCoinbaseSymbols(file):
     file: the directory your saved JSON file exists in.
 
     '''
-    print(file)
+
+    f = open(fileDirectory+ '/coinbase.json','r')
+    file = f
+    f.close()
+    print()
     jsonFile = file
-    df = pd.read_json(jsonFile)
+    df = pd.read_json(jsonFile, lines=True)
     df.to_csv(fileDirectory+'/Crypto/coinbase_listings.csv')
     print(df)
 
@@ -356,6 +362,7 @@ def fetchDailyData(symbol):
         data.sort_values(by=['unix'],inplace=True)
         data['date'] = pd.to_datetime(data['unix'], unit='s')  # convert to a readable date
         data['vol_fiat'] = data['volume'] * data['close']      # multiply the BTC volume by closing price to approximate fiat volume
+        data['Symbol'] = pair_split[0]
         Momentum_AOI = AwesomeOscillatorIndicator(high=data.high, low=data.low)
         data['AOI'] = Momentum_AOI.awesome_oscillator()
 
@@ -528,6 +535,24 @@ def fetchAllCoinbase():
     for c in tqdm(coinbaseSymbols.index, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
         fetchDailyData(str(coinbaseSymbols['id'][c]).replace('-','/'))
 
+def combineCryptoData():
+    print('Gathering resourses.')
+    main = pd.DataFrame()
+    #f = len(glob.iglob(dir+"/*csv"))
+    f = 0
+    l = fileDirectory+'/Crypto/USD'
+    f = len(os.listdir(l))
+    
+    print('Combining files.')
+    for file in tqdm(glob.iglob(l+"/*csv"),total=f,ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
+        #f = f + 1
+        id = str(file)
+        #print('file #' + str(f))
+        df = pd.read_csv(file)
+        main = pd.concat([main, df], ignore_index=True)
+    print('Saving the file.')
+    main.to_csv(fileDirectory+'/Crypto/Merged.csv', index=False)
+    print('All Done!')
 
 #if __name__ == "__main__":
 #    # we set which pair we want to retrieve data for
