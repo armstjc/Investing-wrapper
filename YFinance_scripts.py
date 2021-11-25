@@ -546,17 +546,42 @@ def getInstitutionalHolders():
     stockInstitutionalHolders.to_csv(fileDirectory + '/Holders/Institutional/'+'MSFT'+'.csv')
     print(stockMajorHolders)
 
-def downloadStockHistory():
-    df = pd.DataFrame(stockList)
-    
-    stonk = ""
-    for s in df.index:
-        stonk = stonk + " " + stockList['Symbol'][s]
 
-    print(stonk)
-    data = yf.download(tickers=stonk,period=max,threads=True)
-    print(data)
-    
+def alterForRSI():
+    '''
+
+    Using existing data you have downloaded into your StockHistory
+    folder, run the RSI calculation if the stock has existed for more than
+    14 days.
+
+    '''
+    stockName = ''
+    for file in tqdm(glob.iglob(fileDirectory + "/StockHistory/*csv"), ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
+        df = pd.read_csv(file)
+        stockName = df['ABV'][0]
+        index = df.index
+        numOfRows = len(index)
+        df['Gain'] = df.Close - df.Close.shift(1)
+        df['Loss'] = df.Close.shift(1) - df.Close
+        
+        boolGain = df.Gain < 0
+        boolLoss = df.Loss < 0
+        val = 0
+        df.loc[boolGain, 'Gain'] = val
+        df.loc[boolLoss, 'Loss'] = val
+
+        df['AVG_Gain'] = 0
+        df['AVG_Loss'] = 0
+        if (numOfRows > 14):
+            for g in range(14,numOfRows):
+                df.AVG_Gain.g = (df.AVG_Gain.g + df.AVG_Gain.g.shift(1) + df.AVG_Gain.g.shift(2) + df.AVG_Gain.g.shift(4) + df.AVG_Gain.g.shift(5)+ + df.AVG_Gain.g.shift(6))/7
+               
+
+        #    #for s in range(15,df.index):
+        #else:
+        #    pass
+        df.to_csv(fileDirectory +'/StockHistory/'+stockName+'.csv',index=False)
+
 
 
 #def mutiThreading():

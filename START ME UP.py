@@ -18,21 +18,9 @@ import pandas as pd
 ## Python!!                             ##
 ##########################################
 
-osName = platform.system()
 global fileDirectory
-print(osName)
-if(osName == "Windows"):
-    fileDirectory = 'D:/Stocks'
-    print('This is a Windows Machine.')
-elif(osName == "Darwin"):
-    fileDirectory = str(os.path.expanduser('~'))
-    # If someone knows mac os, I'd like to know how this can be improved on.
-    print('This is a Mac OS X Machine.')
-elif(osName == "Linux"):
-    fileDirectory = '/Stocks'
-    print('This is a Linux Machine.')
-else:
-    print('OS not Supported!')
+
+fileDirectory = 'D:/Stocks'
 
 def main():
     '''

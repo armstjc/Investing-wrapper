@@ -23,9 +23,7 @@ def main():
     ##          RefreshStockAbv Scripts                ##
     #####################################################
     getStockAbv()
-    #getNyseStockABV()
-    #getNasdaqStockABV()
-    #getAmexStockABV()
+
     #####################################################
     ##          YFinance Scripts                       ##
     #####################################################
@@ -39,6 +37,7 @@ def main():
     #getDayStockTicker()
     #getMajorHolders()
     #getInstitutionalHolders()
+    #alterForRSI()
 
     #####################################################
     ##          congress Scripts                       ##
@@ -50,11 +49,10 @@ def main():
     #####################################################
     ##          coinbase_py Scripts                    ##
     #####################################################
-    #fetchCoinbaseSymbols() # By default, this will be in wherever you specify your file directory, for a file called 'coinbase.json'
+    #fetchCoinbaseSymbols(fileDirectory+ '/coinbase.json') # By default, this will be in wherever you specify your file directory, for a file called 'coinbase.json'
     #fetchCryptoCurrencies()
-    #fetchAllCoinbase()
+    fetchAllCoinbase()
     #fetchDailyData(symbol="BTC/USD")
-    combineCryptoData()
 
 if __name__ == "__main__":
     main()
