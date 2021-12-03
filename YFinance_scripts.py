@@ -22,7 +22,7 @@ from ta.trend import *
 from ta.others import *
 from ta.utils import dropna
 import threading
-
+import json
 
 checkFolderIntegrity()
 
@@ -66,12 +66,13 @@ def getTodaysStockHistory(daysOffset):
     tomorow = date.today() - datetime.timedelta(days= 0)
     strTomorow = tomorow.strftime("%Y-%m-%d")
     listLen = len(stockList)
-    for i in tqdm(stockList.index, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
+    arr = stockList['Symbol'].to_numpy()
+    for i in tqdm(arr.T, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
         #print(str(i)+'/'+str(listLen)+' ' + stockList['Symbol'][i])
         try:
-            stockTickers = yf.download(stockList['Symbol'][i], start=strToday, end=strTomorow, interval = "1m" )
-            stockTickers['ABV'] =  stockList['Symbol'][i]
-            stockTickers.to_csv(fileDirectory + '/ByMinuteHistory/'+stockList['Symbol'][i]+'_'+strTomorow+'.csv')
+            stockTickers = yf.download(i, start=strToday, end=strTomorow, interval = "1m" )
+            stockTickers['ABV'] =  i
+            stockTickers.to_csv(fileDirectory + '/ByMinuteHistory/'+i+'_'+strTomorow+'.csv')
         except:
             pass
 
@@ -93,11 +94,12 @@ def getStockHistory():
    
     '''
     print('Getting the full history of the stock market.')
-    for i in tqdm(stockList.index, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
+    arr = stockList['Symbol'].to_numpy()
+    for i in tqdm(arr.T, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
         try:
-            stock = yf.Ticker(stockList['Symbol'][i])
+            stock = yf.Ticker(i)
             hist = stock.history(period="max")
-            hist.to_csv(fileDirectory + '/StockHistory/'+stockList['Symbol'][i]+'.csv')
+            hist.to_csv(fileDirectory + '/StockHistory/'+i+'.csv')
         except:
             pass
 
@@ -119,9 +121,10 @@ def getStockHistoryWithIndicators():
    
     '''
     print('Getting the full history of the stock market.')
-    for i in tqdm(stockList.index, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
+    arr = stockList['Symbol'].to_numpy()
+    for i in tqdm(arr.T, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
         try:
-            stock = yf.Ticker(stockList['Symbol'][i])
+            stock = yf.Ticker(i)
             hist = stock.history(period="max")
             Momentum_AOI = AwesomeOscillatorIndicator(high=hist.High, low=hist.Low)
             hist['AOI'] = Momentum_AOI.awesome_oscillator()
@@ -261,7 +264,7 @@ def getStockHistoryWithIndicators():
             Other_DR = DailyReturnIndicator(close=hist.Close)
             hist['DR'] = Other_DR.daily_return()
 
-            hist.to_csv(fileDirectory + '/StockHistory/'+stockList['Symbol'][i]+'.csv')
+            hist.to_csv(fileDirectory + '/StockHistory/'+i+'.csv')
         except:
             pass
 
@@ -283,10 +286,11 @@ def CalculateStockIndicators():
    
     '''
     print('Getting the full history of the stock market.')
-    for i in tqdm(stockList.index, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
+    arr = stockList['Symbol'].to_numpy()
+    for i in tqdm(arr.T, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
         try:
             stock = i
-            hist = pd.read_csv(fileDirectory+'/StockHistory/'+stockList['Symbol'][i]+'.csv')
+            hist = pd.read_csv(fileDirectory+'/StockHistory/'+ i +'.csv')
             Momentum_AOI = AwesomeOscillatorIndicator(high=hist.High, low=hist.Low)
             hist['AOI'] = Momentum_AOI.awesome_oscillator()
 
@@ -425,7 +429,7 @@ def CalculateStockIndicators():
             Other_DR = DailyReturnIndicator(close=hist.Close)
             hist['DR'] = Other_DR.daily_return()
 
-            hist.to_csv(fileDirectory + '/StockHistory/'+stockList['Symbol'][i]+'.csv')
+            hist.to_csv(fileDirectory + '/StockHistory/'+i+'.csv')
         except:
             pass
 
@@ -447,12 +451,13 @@ def getStockActions():
     unless you have it formatted this way.
 
     '''   
-    for i in tqdm(stockList.index, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
+    arr = stockList['Symbol'].to_numpy()
+    for i in tqdm(arr.T, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
         try:
-            stock = yf.Ticker(stockList['Symbol'][i])
+            stock = yf.Ticker(i)
             hist = stock.actions
-            hist['ABV'] = stockList['Symbol'][i]
-            hist.to_csv(fileDirectory + '/StockEvents/'+stockList['Symbol'][i]+'.csv')
+            hist['ABV'] = i
+            hist.to_csv(fileDirectory + '/StockEvents/'+ i +'.csv')
         except:
             pass
 
@@ -471,20 +476,22 @@ def getStockFinancials():
     unless you have it formatted this way.
 
     '''
-    for i in tqdm(stockList.index, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
+    arr = stockList['Symbol'].to_numpy()
+    for i in tqdm(arr.T, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
         try:
-            stock = yf.Ticker(stockList['Symbol'][i])
+            stock = yf.Ticker(i)
             hist = stock.financials
             df_transposed = hist.transpose()
-            df_transposed['ABV'] = stockList['Symbol'][i]
-            df_transposed.to_csv(fileDirectory + '/StockFinancials/'+stockList['Symbol'][i]+'.csv')
+            df_transposed['ABV'] = i
+            df_transposed.to_csv(fileDirectory + '/StockFinancials/'+i+'.csv')
         except:
             pass
 
 def getStockOptions():
-    for i in tqdm(stockList.index, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
+    arr = stockList['Symbol'].to_numpy()
+    for i in tqdm(arr.T, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
         try:
-            stockABV = stockList['Symbol'][i]
+            stockABV = i
             stock = yf.Ticker(stockABV)
             options = stock.options
             datalist = list(options)
@@ -492,48 +499,27 @@ def getStockOptions():
             for s in listOptions.index:
                 opt = stock.option_chain(listOptions['Dates'][s])
                 optCallsTable = opt.calls
-                optCallsTable['ABV'] = stockList['Symbol'][i]
+                optCallsTable['ABV'] = i
                 optCallsTable.to_csv(fileDirectory + '/Options/Calls/'+stockABV+'_'+listOptions['Dates'][s]+'.csv',index=False)
                 optPutsTable = opt.puts
-                optPutsTable['ABV'] = stockList['Symbol'][i]
+                optPutsTable['ABV'] = i
                 optPutsTable.to_csv(fileDirectory + '/Options/Puts/'+stockABV+'_'+listOptions['Dates'][s]+'.csv',index=False)
         except:
             pass
 
-def getDayStockTicker():
-    print('get ticker data')
-    #2021-09-30 = "$Y-%m-%d"
 
-    listLen = len(stockList)
-    for i in tqdm(stockList.index, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
-        print('888888888888888888888888888888888888888888888888888888888888888888888888888888888')
-        print(str(i)+'/'+str(listLen)+' ' + stockList['Symbol'][i])
-        try:
-            for d in range(1,29):
-            
-                today = date.today() - datetime.timedelta(days=d+1)
-                strToday = today.strftime("%Y-%m-%d")
-
-                tomorow = date.today() - datetime.timedelta(days=d)
-                strTomorow = tomorow.strftime("%Y-%m-%d")
-                
-                stockTickers = yf.download(stockList['Symbol'][i], start=strToday, end=strTomorow, interval = "1m" )
-                stockTickers['ABV'] =  stockList['Symbol'][i]
-                stockTickers.to_csv(fileDirectory + '/ByMinuteHistory/'+stockList['Symbol'][i]+'_'+strTomorow+'.csv')
-        except:
-            pass
-        print('888888888888888888888888888888888888888888888888888888888888888888888888888888888')
         
 def getMajorHolders():
     print('')
-    for i in tqdm(stockList.index, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
+    arr = stockList['Symbol'].to_numpy()
+    for i in tqdm(arr.T, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
         
-        stock = yf.Ticker(stockList['Symbol'][i])
+        stock = yf.Ticker(i)
         stockMajorHolders = stock.major_holders
 
         try:
-            stockInstitutionalHolders['ABV'] = stockList['Symbol'][i]
-            stockMajorHolders.to_csv(fileDirectory + '/Holders/Major/'+ stockList['Symbol'][i] + '_major_holders.csv')
+            stockMajorHolders['ABV'] = i
+            stockMajorHolders.to_csv(fileDirectory + '/Holders/Major/'+ i + '_major_holders.csv')
         except:
             pass
 
@@ -546,42 +532,46 @@ def getInstitutionalHolders():
     stockInstitutionalHolders.to_csv(fileDirectory + '/Holders/Institutional/'+'MSFT'+'.csv')
     print(stockMajorHolders)
 
-
-def alterForRSI():
-    '''
-
-    Using existing data you have downloaded into your StockHistory
-    folder, run the RSI calculation if the stock has existed for more than
-    14 days.
-
-    '''
-    stockName = ''
-    for file in tqdm(glob.iglob(fileDirectory + "/StockHistory/*csv"), ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
-        df = pd.read_csv(file)
-        stockName = df['ABV'][0]
-        index = df.index
-        numOfRows = len(index)
-        df['Gain'] = df.Close - df.Close.shift(1)
-        df['Loss'] = df.Close.shift(1) - df.Close
+def getStockRecommendations():
+    print('')
+    arr = stockList['Symbol'].to_numpy()
+    for i in tqdm(arr.T, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
         
-        boolGain = df.Gain < 0
-        boolLoss = df.Loss < 0
-        val = 0
-        df.loc[boolGain, 'Gain'] = val
-        df.loc[boolLoss, 'Loss'] = val
+        stock = yf.Ticker(i)
+        stockRecommendations = stock.recommendations
 
-        df['AVG_Gain'] = 0
-        df['AVG_Loss'] = 0
-        if (numOfRows > 14):
-            for g in range(14,numOfRows):
-                df.AVG_Gain.g = (df.AVG_Gain.g + df.AVG_Gain.g.shift(1) + df.AVG_Gain.g.shift(2) + df.AVG_Gain.g.shift(4) + df.AVG_Gain.g.shift(5)+ + df.AVG_Gain.g.shift(6))/7
-               
+        try:
+            stockRecommendations['ABV'] = i
+            stockRecommendations.to_csv(fileDirectory + '/Recommendations/'+ i + '_recommendations.csv')
+        except:
+            pass
 
-        #    #for s in range(15,df.index):
-        #else:
-        #    pass
-        df.to_csv(fileDirectory +'/StockHistory/'+stockName+'.csv',index=False)
+def getStockSustainability():
+    print('')
+    arr = stockList['Symbol'].to_numpy()
+    for i in tqdm(arr.T, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
+        
+        stock = yf.Ticker(i)
+        stockSustainability = stock.sustainability
+        try:
+            stockSustainability = stockSustainability.transpose()
+            stockSustainability['ABV'] = i
+            stockSustainability.to_csv(fileDirectory + '/Sustainability/'+ i + '_sustainability.csv')
+        except:
+            pass
 
+def getStockNews():
+    print('')
+    arr = stockList['Symbol'].to_numpy()
+    for i in tqdm(arr.T, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
+        
+        stock = yf.Ticker(i)
+        stockNews = stock.news
+        json_string = json.dumps(stockNews)
+        #print(json_string)
+        with open(fileDirectory+'/StockNews/'+i+'_news.json', 'w+') as file:
+            file.write(json_string)    
+            
 
 
 #def mutiThreading():

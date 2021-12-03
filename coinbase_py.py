@@ -14,6 +14,12 @@ from ta.volatility import *
 from ta.trend import * 
 from ta.others import *
 from ta.utils import dropna
+import glob
+import datetime
+import numpy as np
+
+year = str(datetime.date.today().year)
+print(year)
 checkFolderIntegrity()
 
 def fetchCryptoCurrencies():
@@ -356,6 +362,7 @@ def fetchDailyData(symbol):
         data.sort_values(by=['unix'],inplace=True)
         data['date'] = pd.to_datetime(data['unix'], unit='s')  # convert to a readable date
         data['vol_fiat'] = data['volume'] * data['close']      # multiply the BTC volume by closing price to approximate fiat volume
+        data['Symbol'] = symbol
         Momentum_AOI = AwesomeOscillatorIndicator(high=data.high, low=data.low)
         data['AOI'] = Momentum_AOI.awesome_oscillator()
 
@@ -428,8 +435,13 @@ def fetchDailyData(symbol):
         Volatility_Ulcer = UlcerIndex(close=data.close)
         data['Ulcer Index'] = Volatility_Ulcer.ulcer_index()
 
-        Volatility_ATR = average_true_range(high=data.high,low=data.low,close=data.close)
-        data['ATR'] = Volatility_ATR
+        try:
+            Volatility_ATR = average_true_range(high=data.high,low=data.low,close=data.close)
+            data['ATR'] = Volatility_ATR
+        except:
+            pass
+        
+        
 
         Trend_Aroon = AroonIndicator(close=data.close)
         data['Aroon Down Channel'] = Trend_Aroon.aroon_down()
@@ -498,25 +510,25 @@ def fetchDailyData(symbol):
             print("Did not return any data from Coinbase for this symbol")
         else:
             if(pair_split[1] == "EUR"):
-                data.to_csv(fileDirectory+'/Crypto/EUR/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_dailydata.csv', index=False)
+                data.to_csv(fileDirectory+'/Crypto/EUR/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_'+year+'dailydata.csv', index=False)
             elif(pair_split[1] == "GBP"):
-                data.to_csv(fileDirectory+'/Crypto/GBP/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_dailydata.csv', index=False)
+                data.to_csv(fileDirectory+'/Crypto/GBP/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_'+year+ '_dailydata.csv', index=False)
             elif(pair_split[1] == "USD"):
-                data.to_csv(fileDirectory+'/Crypto/USD/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_dailydata.csv', index=False)
+                data.to_csv(fileDirectory+'/Crypto/USD/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_'+year+ '_dailydata.csv', index=False)
             elif(pair_split[1] == "USDC"):
-                data.to_csv(fileDirectory+'/Crypto/USDC/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_dailydata.csv', index=False)
+                data.to_csv(fileDirectory+'/Crypto/USDC/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_'+year+ '_dailydata.csv', index=False)
             elif(pair_split[1] == "USDT"):
-                data.to_csv(fileDirectory+'/Crypto/USDT/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_dailydata.csv', index=False)
+                data.to_csv(fileDirectory+'/Crypto/USDT/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_'+year+ '_dailydata.csv', index=False)
             elif(pair_split[1] == "UST"):
-                data.to_csv(fileDirectory+'/Crypto/UST/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_dailydata.csv', index=False)
+                data.to_csv(fileDirectory+'/Crypto/UST/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_'+year+ '_dailydata.csv', index=False)
             elif(pair_split[1] == "BTC"):
-                data.to_csv(fileDirectory+'/Crypto/USDT/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_dailydata.csv', index=False)
+                data.to_csv(fileDirectory+'/Crypto/USDT/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_'+year+ '_dailydata.csv', index=False)
             elif(pair_split[1] == "ETH"):
-                data.to_csv(fileDirectory+'/Crypto/UST/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_dailydata.csv', index=False)
+                data.to_csv(fileDirectory+'/Crypto/UST/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_'+year+ '_dailydata.csv', index=False)
             elif(pair_split[1] == "DAI"):
-                data.to_csv(fileDirectory+'/Crypto/UST/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_dailydata.csv', index=False)
+                data.to_csv(fileDirectory+'/Crypto/UST/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_'+year+ '_dailydata.csv', index=False)
             else:
-                data.to_csv(fileDirectory+'/Crypto/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_dailydata.csv', index=False)
+                data.to_csv(fileDirectory+'/Crypto/Coinbase_'+ pair_split[0] +'-'+ pair_split[1] + '_'+year+ '_dailydata.csv', index=False)
 
 
     else:
@@ -524,9 +536,21 @@ def fetchDailyData(symbol):
 
 def fetchAllCoinbase():
     coinbaseSymbols = pd.read_csv(fileDirectory+'/Crypto/coinbase_listings.csv')
+    df = coinbaseSymbols['id'].to_numpy()
+    for c in tqdm(df.T, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
+        fetchDailyData(str(c).replace('-','/'))
 
-    for c in tqdm(coinbaseSymbols.index, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
-        fetchDailyData(str(coinbaseSymbols['id'][c]).replace('-','/'))
+def mergeCoinbaseFiles():
+    main_df = pd.DataFrame()
+    l = fileDirectory + "/Crypto/USD"
+    f = 0
+    for file in glob.iglob(l+"/*csv"):
+        f = f + 1
+
+    for file in tqdm(glob.iglob(l+"/*csv"),total=f,ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
+        df = pd.read_csv(file)
+        main_df = pd.concat([main_df, df], ignore_index=True)
+    main_df.to_csv(fileDirectory + "/Crypto/Merged"+year+".csv", index=False)
 
 
 #if __name__ == "__main__":

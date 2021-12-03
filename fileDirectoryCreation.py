@@ -191,3 +191,15 @@ def checkFolderIntegrity():
         os.mkdir(fileDirectory + '/Congress/')
     except:
         pass
+    try:
+        os.mkdir(fileDirectory + '/Recommendations/')
+    except:
+        pass
+    try:
+        os.mkdir(fileDirectory + '/Sustainability/')
+    except:
+        pass
+    try:
+        os.mkdir(fileDirectory + '/StockNews/')
+    except:
+        pass

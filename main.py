@@ -33,11 +33,12 @@ def main():
     #fastCalculateStockIndicators()
     #getStockActions()
     #getStockFinancials()
-    #getStockOptions()
-    #getDayStockTicker()
+    getStockOptions()
     #getMajorHolders()
     #getInstitutionalHolders()
-    #alterForRSI()
+    #getStockRecommendations()
+    #getStockSustainability()
+    #getStockNews()
 
     #####################################################
     ##          congress Scripts                       ##
@@ -51,8 +52,9 @@ def main():
     #####################################################
     #fetchCoinbaseSymbols(fileDirectory+ '/coinbase.json') # By default, this will be in wherever you specify your file directory, for a file called 'coinbase.json'
     #fetchCryptoCurrencies()
-    fetchAllCoinbase()
+    #fetchAllCoinbase()
     #fetchDailyData(symbol="BTC/USD")
+    #mergeCoinbaseFiles()
 
 if __name__ == "__main__":
     main()
