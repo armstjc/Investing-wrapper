@@ -564,13 +564,15 @@ def getStockNews():
     print('')
     arr = stockList['Symbol'].to_numpy()
     for i in tqdm(arr.T, ascii=True, bar_format='{l_bar}{bar:30}{r_bar}{bar:-30b}'):
-        
-        stock = yf.Ticker(i)
-        stockNews = stock.news
-        json_string = json.dumps(stockNews)
-        #print(json_string)
-        with open(fileDirectory+'/StockNews/'+i+'_news.json', 'w+') as file:
-            file.write(json_string)    
+        try:
+            stock = yf.Ticker(i)
+            stockNews = stock.news
+            json_string = json.dumps(stockNews)
+            #print(json_string)
+            with open(fileDirectory+'/StockNews/'+i+'_news.json', 'w+') as file:
+                file.write(json_string)    
+        except:
+            pass
             
 
 

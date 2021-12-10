@@ -45,3 +45,9 @@ def getAmexStockABV():
     stockDF = pd.read_csv(file, sep=" ", header=None, names=["Symbol"])
     stockDF.to_csv(fileDirectory + '/Stock_List.csv',index=False)
     print(stockDF)
+
+def main():
+    getStockAbv()
+
+if __name__ == "__main__":
+    main()
